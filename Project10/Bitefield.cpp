@@ -1,58 +1,50 @@
 #include "Bitefield.h"
 #include <stdexcept>
 #include <algorithm>
-
+#include <string>
 Bitefield::Bitefield(int len) : BitLen(len)
 {
-    if (len <= 0) {
-        throw std::invalid_argument("len <= 0");
+    if (len <= 0) throw "len <= 0";
+    if (len % (8 * sizeof(TELEM)) == 0) {
+        MemLen = len / (8 * sizeof(TELEM));
     }
-
-    MemLen = (len % (8 * sizeof(TELEM)) == 0) ? len / (8 * sizeof(TELEM)) : len / (8 * sizeof(TELEM)) + 1;
-    pMem = new TELEM[MemLen]();
+    else {
+        MemLen = len / (8 * sizeof(TELEM)) + 1;
+    }
+    pMem = new TELEM[MemLen];
+    for (int i = 0; i < MemLen; i++) {
+        pMem[i] = 0;
+    }
 }
-
 Bitefield::Bitefield(const Bitefield& bf) : BitLen(bf.BitLen), MemLen(bf.MemLen)
 {
     pMem = new TELEM[MemLen];
-    std::copy(bf.pMem, bf.pMem + MemLen, pMem);
+    for (int i = 0; i < MemLen; i++) {
+        pMem[i] = bf.pMem[i];
+    }
 }
-
-Bitefield::~Bitefield()
-{
-    delete[] pMem;
-    pMem = nullptr;
-    BitLen = 0;
-}
-
 int Bitefield::GetMemIndex(const int n) const
 {
-    if (n < 0 || n >= BitLen) {
+    if (n < 0 || n > BitLen) {
         throw std::out_of_range("No correct index");
     }
-    return n / (8 * sizeof(TELEM));
+    return (n / (8 * sizeof(TELEM)));
 }
-
-Bitefield::TELEM Bitefield::GetMemMask(const int n) const
+TELEM Bitefield::GetMemMask(const int n) const
 {
-    return static_cast<TELEM>(1) << (n % (8 * sizeof(TELEM)));
+    return 1 << (n - sizeof(TELEM) * GetMemIndex(n));
 }
-
 int Bitefield::GetLength() const
 {
     return BitLen;
 }
-
 void Bitefield::SetBit(const int n)
 {
     if (n >= 0 && n < BitLen) {
         pMem[GetMemIndex(n)] |= GetMemMask(n);
     }
-    else {
-        throw std::out_of_range("No correct n");
-    }
+    else throw " no correct n";
 }
-
 void Bitefield::ClrBit(const int n)
 {
     if (n >= 0 && n < BitLen) {
@@ -62,17 +54,15 @@ void Bitefield::ClrBit(const int n)
         throw std::out_of_range("No correct n");
     }
 }
-
 int Bitefield::GetBit(const int n) const
 {
     if (n >= 0 && n < BitLen) {
-        return (pMem[GetMemIndex(n)] & GetMemMask(n)) ? 1 : 0;
+        return (pMem[GetMemIndex(n)] & GetMemMask(n));
     }
     else {
         throw std::out_of_range("No correct n");
     }
 }
-
 Bitefield& Bitefield::operator=(const Bitefield& bf)
 {
     if (this != &bf) {
@@ -80,45 +70,63 @@ Bitefield& Bitefield::operator=(const Bitefield& bf)
         BitLen = bf.BitLen;
         MemLen = bf.MemLen;
         pMem = new TELEM[MemLen];
-        std::copy(bf.pMem, bf.pMem + MemLen, pMem);
+        for (int i = 0; i < MemLen; i++) {
+            pMem[i] = bf.pMem[i];
+        }
     }
     return *this;
 }
-
 bool Bitefield::operator==(const Bitefield& bf) const
 {
-    return BitLen == bf.BitLen && MemLen == bf.MemLen && std::equal(pMem, pMem + MemLen, bf.pMem);
-}
-
-bool Bitefield::operator!=(const Bitefield& bf) const
-{
-    return !(*this == bf);
-}
-
-Bitefield Bitefield::operator|(const Bitefield& bf) const
-{
-    int len = std::max(BitLen, bf.BitLen);
-    Bitefield tmp(len);
-    std::copy(pMem, pMem + MemLen, tmp.pMem);
-    for (int i = 0; i < bf.MemLen; i++) {
-        tmp.pMem[i] |= bf.pMem[i];
-    }
-    return tmp;
-}
-
-Bitefield Bitefield::operator&(const Bitefield& bf) const
-{
-    int len = std::min(BitLen, bf.BitLen);
-    Bitefield tmp(len);
-    for (int i = 0; i < len; i++) {
-        if (GetBit(i) & bf.GetBit(i)) {
-            tmp.SetBit(i);
+    int flag = 1;
+    if (MemLen == bf.MemLen && BitLen == bf.BitLen) {
+        for (size_t i = 0; i < MemLen; i++) {
+            if (pMem[i] != bf.pMem[i]) flag = 0;
         }
     }
+    else {
+        flag = 0;
+    }
+    return flag;
+}
+bool Bitefield::operator!=(const Bitefield& bf) const
+{
+    int flag = 1;
+    if (MemLen == bf.MemLen && BitLen == bf.BitLen) {
+        for (size_t i = 0; i < MemLen; i++) {
+            if (pMem[i] != bf.pMem[i]) flag = 0;
+        }
+    }
+    else {
+        flag = 0;
+    }
+    if (flag) return 0;
+    else return 1;
+}
+Bitefield Bitefield::operator|(const Bitefield& bf)
+{
+    int len = bf.BitLen;
+    if (BitLen > len) len = BitLen;
+    Bitefield tmp(len);
+    for (int i = 0; i < MemLen; i++) tmp.pMem[i] = pMem[i];
+    for (int i = 0; i < bf.MemLen; i++) tmp.pMem[i] = tmp.pMem[i] | bf.pMem[i];
     return tmp;
 }
-
-Bitefield Bitefield::operator~() const
+Bitefield Bitefield::operator&(const Bitefield& bf)
+{
+    int len;
+    if (BitLen > bf.BitLen) len = BitLen;
+    else len = bf.BitLen;
+    Bitefield tmp(len);
+    int minlen;
+    if (bf.BitLen < BitLen) minlen = bf.BitLen;
+    else minlen = BitLen;
+    for (int i = 0; i < minlen; i++) {
+        if (GetBit(i) & bf.GetBit(i)) tmp.SetBit(i);
+    }
+    return tmp;
+}
+Bitefield Bitefield::operator~(void)
 {
     Bitefield tmp(BitLen);
     for (int i = 0; i < tmp.BitLen; i++) {
@@ -131,38 +139,33 @@ Bitefield Bitefield::operator~() const
     }
     return tmp;
 }
-
-std::istream& operator>>(std::istream& istr, Bitefield& bf)
+Bitefield::~Bitefield()
+{
+    delete[] pMem;
+    pMem = nullptr;
+    BitLen = 0;
+}
+std::istream& operator>>(std::istream& istr, Bitefield& bf) 
 {
     std::string tmp;
     istr >> tmp;
     if (tmp.size() != bf.GetLength()) {
-        throw std::invalid_argument("No correct length");
+        throw "no correct length";
     }
     else {
         for (int i = 0; i < bf.GetLength(); i++) {
-            if (tmp[i] == '0') {
-                bf.ClrBit(i);
-            }
-            else if (tmp[i] == '1') {
-                bf.SetBit(i);
-            }
-            else {
-                throw std::invalid_argument("No correct string");
-            }
+            if (tmp[i] == '0') bf.ClrBit(i);
+            if (tmp[i] == '1') bf.SetBit(i);
+            else throw "no correct string";
         }
     }
     return istr;
 }
-
-std::ostream& operator<<(std::ostream& ostr, const Bitefield& bf)
+std::ostream& operator<<(std::ostream& ostr, const Bitefield& bf) 
 {
-    ostr << "{";
     for (int i = 0; i < bf.GetLength(); i++) {
-        if (bf.GetBit(i) == 1) {
-            ostr << i + 1 << ", ";
-        }
+        if (bf.GetBit(i) == 1) std::cout << 1;
+        else std::cout << 0;
     }
-    ostr << "}" << std::endl;
     return ostr;
 }
