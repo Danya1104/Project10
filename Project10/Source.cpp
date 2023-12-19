@@ -1,94 +1,86 @@
 #include <Windows.h>  
 #include <iostream>
 #include "Set.h"
-#include "Bitefield.h"
-
+using namespace std;
 int main() {
-    using namespace std;
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     try {
-        int maxPower, maxPower1;
-        cout << "Ââåäèòå ìàêñèìàëüíóþ ìîùíîñòü ïåðâîãî ìíîæåñòâà: ";
+        int maxPower,maxPower1;
+        cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð¼Ð°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½ÑƒÑŽ Ð¼Ð¾Ñ‰Ð½Ð¾ÑÑ‚ÑŒ Ð´Ð»Ñ  Ð¿ÐµÑ€Ð²Ð¾Ð³Ð¾ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð°: ";
         cin >> maxPower;
-        cout << "Ââåäèòå ìàêñèìàëüíóþ ìîùíîñòü âòîðîãî ìíîæåñòâà: ";
+        maxPower += 1;
+        cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð¼Ð°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½ÑƒÑŽ Ð¼Ð¾Ñ‰Ð½Ð¾ÑÑ‚ÑŒ Ð´Ð»Ñ Ð²Ñ‚Ð¾Ñ€Ð¾Ð³Ð¾ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð°: ";
         cin >> maxPower1;
-
-        if (maxPower <= 0 || maxPower1 <= 0) {
-            cerr << "Ìàêñèìàëüíàÿ ìîùíîñòü äîëæíà áûòü ïîëîæèòåëüíûì ÷èñëîì." << endl;
-            return 1;
-        }
-
+        maxPower1 += 1;
         Set set1(maxPower);
         Set set2(maxPower1);
-
-        cout << "Ââåäèòå ýëåìåíòû ïåðâîãî ìíîæåñòâà ÷åðåç ïðîáåë: ";
         cin >> set1;
-
-        cout << "Ââåäèòå ýëåìåíòû âòîðîãî ìíîæåñòâà ÷åðåç ïðîáåë: ";
         cin >> set2;
-
         int choice;
         do {
-            cout << "\nÂûáåðèòå îïåðàöèþ:\n";
-            cout << "1. Îáúåäèíåíèå ìíîæåñòâ\n";
-            cout << "2. Ïåðåñå÷åíèå ìíîæåñòâ\n";
-            cout << "3. Ðàçíîñòü ìíîæåñòâ\n";
-            cout << "4. Äîïîëíåíèå ïåðâîãî ìíîæåñòâà\n";
-            cout << "5. Ñðàâíåíèå ìíîæåñòâ\n";
-            cout << "0. Âûõîä\n";
-            cout << "Âàø âûáîð: ";
+            cout << "\nÐ’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸ÑŽ:\n";
+            cout << "1. ÐžÐ±ÑŠÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²\n";
+            cout << "2. ÐŸÐµÑ€ÐµÑÐµÑ‡ÐµÐ½Ð¸Ðµ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²\n";
+            cout << "3. Ð Ð°Ð·Ð½Ð¾ÑÑ‚ÑŒ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²\n";
+            cout << "4. Ð”Ð¾Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ðµ Ð¿ÐµÑ€Ð²Ð¾Ð³Ð¾ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð°\n";
+            cout << "5. Ð”Ð¾Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ðµ Ð²Ñ‚Ð¾Ñ€Ð¾Ð³Ð¾ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð°\n";
+            cout << "6. Ð¡Ñ€Ð°Ð²Ð½ÐµÐ½Ð¸Ðµ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²\n";
+            cout << "0. Ð’Ñ‹Ñ…Ð¾Ð´\n";
+            cout << "Ð’Ð°Ñˆ Ð²Ñ‹Ð±Ð¾Ñ€: ";
             cin >> choice;
-
             switch (choice) {
             case 1: {
                 Set unionSet = set1 + set2;
-                cout << "Îáúåäèíåíèå ìíîæåñòâ:\n" << unionSet;
+                cout << "ÐžÐ±ÑŠÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²:\n" << unionSet;
                 break;
             }
             case 2: {
                 Set intersectionSet = set1 * set2;
-                cout << "Ïåðåñå÷åíèå ìíîæåñòâ:\n" << intersectionSet;
+                cout << "ÐŸÐµÑ€ÐµÑÐµÑ‡ÐµÐ½Ð¸Ðµ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²:\n" << intersectionSet;
                 break;
             }
             case 3: {
                 int element;
-                cout << "Ââåäèòå ýëåìåíò äëÿ ðàçíîñòè: ";
+                cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ Ð´Ð»Ñ Ñ€Ð°Ð·Ð½Ð¾ÑÑ‚Ð¸: ";
                 cin >> element;
 
                 Set differenceSet = set1 - element;
-                cout << "Ðàçíîñòü ìíîæåñòâ:\n" << differenceSet;
+                cout << "Ð Ð°Ð·Ð½Ð¾ÑÑ‚ÑŒ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²:\n" << differenceSet;
                 break;
             }
             case 4: {
                 Set complementSet = ~set1;
-                cout << "Äîïîëíåíèå ïåðâîãî ìíîæåñòâà:\n" << complementSet;
+                cout << "Ð”Ð¾Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ðµ Ð¿ÐµÑ€Ð²Ð¾Ð³Ð¾ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð°:\n" << complementSet;
                 break;
             }
             case 5: {
+                Set complementSet1 = ~set2;
+                cout << "Ð”Ð¾Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ðµ Ð²Ñ‚Ð¾Ñ€Ð¾Ð³Ð¾ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð°:\n" << complementSet1;
+                break;
+            }
+            case 6: {
                 if (set1 == set2) {
-                    cout << "Ìíîæåñòâà ðàâíû.\n";
+                    cout << "ÐœÐ½Ð¾Ð¶ÐµÑÑ‚Ð²Ð° Ñ€Ð°Ð²Ð½Ñ‹.\n";
                 }
                 else {
-                    cout << "Ìíîæåñòâà íå ðàâíû.\n";
+                    cout << "ÐœÐ½Ð¾Ð¶ÐµÑÑ‚Ð²Ð° Ð½Ðµ Ñ€Ð°Ð²Ð½Ñ‹.\n";
                 }
                 break;
             }
             case 0: {
-                cout << "Ïðîãðàììà çàâåðøåíà.\n";
+                cout << "ÐŸÑ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð° Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð°.\n";
                 break;
             }
             default: {
-                cout << "Íåêîððåêòíûé âûáîð. Ïîïðîáóéòå ñíîâà.\n";
+                cout << "ÐÐµÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ñ‹Ð¹ Ð²Ñ‹Ð±Ð¾Ñ€. ÐŸÐ¾Ð¿Ñ€Ð¾Ð±ÑƒÐ¹Ñ‚Ðµ ÑÐ½Ð¾Ð²Ð°.\n";
                 break;
             }
             }
         } while (choice != 0);
     }
-    catch (const std::exception& ex) {
-        cerr << "Îøèáêà: " << ex.what() << endl;
-        return 1;
+    catch (const char* msg) {
+        cerr << "ÐžÑˆÐ¸Ð±ÐºÐ°: " << msg << endl;
     }
-
     return 0;
 }
