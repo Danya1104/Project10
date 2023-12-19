@@ -22,10 +22,11 @@ int main() {
             cout << "\nВыберите операцию:\n";
             cout << "1. Объединение множеств\n";
             cout << "2. Пересечение множеств\n";
-            cout << "3. Разность множеств\n";
-            cout << "4. Дополнение первого множества\n";
-            cout << "5. Дополнение второго множества\n";
-            cout << "6. Сравнение множеств\n";
+            cout << "3. Разность первого множества\n";
+            cout << "4. Разность второго множества\n";
+            cout << "5. Дополнение первого множества\n";
+            cout << "6. Дополнение второго множества\n";
+            cout << "7. Сравнение множеств\n";
             cout << "0. Выход\n";
             cout << "Ваш выбор: ";
             cin >> choice;
@@ -50,16 +51,25 @@ int main() {
                 break;
             }
             case 4: {
+                int element;
+                cout << "Введите элемент для разности: ";
+                cin >> element;
+
+                Set differenceSet = set2 - element;
+                cout << "Разность множеств:\n" << differenceSet;
+                break;
+            }
+            case 5: {
                 Set complementSet = ~set1;
                 cout << "Дополнение первого множества:\n" << complementSet;
                 break;
             }
-            case 5: {
+            case 6: {
                 Set complementSet1 = ~set2;
                 cout << "Дополнение второго множества:\n" << complementSet1;
                 break;
             }
-            case 6: {
+            case 7: {
                 if (set1 == set2) {
                     cout << "Множества равны.\n";
                 }
